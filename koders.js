@@ -39,7 +39,9 @@ function add() {
   koders.push(newKoder);
   saveKoders(koders);
   console.log("Koder added succesfully");
+  ls();
 }
+
 function rm() {
   const koders = getKoders();
   const koderToRemove = process.argv[3];
@@ -60,7 +62,8 @@ function rm() {
   );
   saveKoders(kodersListFilter);
 
-  console.log("Koder removed succesfully");
+  console.log("Koder removed");
+  ls();
 }
 
 function reset() {
