@@ -18,76 +18,75 @@ function getKoders() {
 function saveKoders(list) {
   fs.writeFileSync(dbName, JSON.stringify(list), "utf-8");
 }
-const command = process.argv[2];
 
-init();
-
-switch (command) {
-  case "ls": {
-    const koders = getKoders();
-    if (koders.length === 0) {
-      console.info("No koders found");
-      process.exit(0);
-    }
-    koders.forEach((koder) => {
-      console.log(koder);
-    });
-    break;
+function ls() {
+  const koders = getKoders();
+  if (koders.length === 0) {
+    console.info("No koders found");
+    process.exit(0);
   }
-  case "add": {
-    const koders = getKoders();
-    const newKoder = process.argv[3];
-    if (!newKoder) {
-      console.error("Please provide a name");
-      process.exit(2);
-    }
-    koders.push(newKoder);
-    saveKoders(koders);
-    console.log("Koder added succesfully");
-
-    break;
+  koders.forEach((koder) => {
+    console.log(koder);
+  });
+}
+function add() {
+  const koders = getKoders();
+  const newKoder = process.argv[3];
+  if (!newKoder) {
+    console.error("Please provide a name");
+    process.exit(2);
   }
-  case "rm": {
-    const koders = getKoders();
-    const koderToRemove = process.argv[3];
-    if (!koderToRemove) {
-      console.error("Please provide a name to remove");
-      process.exit(3);
-    }
-    const exists = koders.find(
-      (koder) => koder.toLowerCase() === koderToRemove.toLowerCase()
-    );
-
-    if (!exists) {
-      console.error("Koder not found");
-      process.exit(4);
-    }
-    const kodersListFilter = koders.filter(
-      (koder) => koder.toLowerCase() != koderToRemove.toLowerCase()
-    );
-    saveKoders(kodersListFilter);
-
-    console.log("Koder removed succesfully");
-
-    break;
+  koders.push(newKoder);
+  saveKoders(koders);
+  console.log("Koder added succesfully");
+}
+function rm() {
+  const koders = getKoders();
+  const koderToRemove = process.argv[3];
+  if (!koderToRemove) {
+    console.error("Please provide a name to remove");
+    process.exit(3);
   }
+  const exists = koders.find(
+    (koder) => koder.toLowerCase() === koderToRemove.toLowerCase()
+  );
 
-  case "reset": {
-    saveKoders([]);
-    console.info("Reset successful");
-    break;
+  if (!exists) {
+    console.error("Koder not found");
+    process.exit(4);
   }
-  case "help":
-    console.log(`
+  const kodersListFilter = koders.filter(
+    (koder) => koder.toLowerCase() != koderToRemove.toLowerCase()
+  );
+  saveKoders(kodersListFilter);
+
+  console.log("Koder removed succesfully");
+}
+
+function reset() {
+  saveKoders([]);
+  console.info("Reset successful");
+}
+function help() {
+  console.log(`
             Usage: koders [command]
             Commands:
             ls      List all koders
             add     Add a new koder
             rm      Remove a koder
             reset   Remove all koders`);
-    break;
-  default:
-    console.error(`Command [${command}] not supported`);
-    process.exit(1);
-    break;
 }
+
+const command = process.argv[2];
+
+init();
+
+const commands = {
+  ls,
+  add,
+  rm,
+  reset,
+  help,
+};
+
+commands[command] ? commands[command]() : help();
